@@ -1,0 +1,14 @@
+{
+  "name": "onespider-server-monitor",
+  "version": "1.0.0",
+  "description": "Enterprise Infrastructure Monitoring System",
+  "main": "monitor.js",
+  "author": "Shubham Vishwakarma <shubham@itsbhm.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.1032.0",
+    "@supabase/supabase-js": "^2.103.3",
+    "axios": "^1.15.0",
+    "ping": "^1.0.0"
+  }
+}

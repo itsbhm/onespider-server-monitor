@@ -1,0 +1,80 @@
+name: OneSpider Pulse
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'            # Pulse check — every 5 minutes
+    - cron: '30 2 * * *'             # Daily summary — 8:00 AM IST
+    - cron: '30 2 * * 1'             # Weekly summary — Monday 8:00 AM IST
+    - cron: '30 2 1 * *'             # Monthly summary — 1st of month 8:00 AM IST
+    - cron: '30 2 1 1,4,7,10 *'      # Quarterly summary — Q1/Q2/Q3/Q4 start
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Select task to run'
+        required: false
+        default: 'pulse'
+        type: choice
+        options:
+          - pulse
+          - summary-daily
+          - summary-weekly
+          - summary-monthly
+          - summary-quarterly
+
+jobs:
+  run-monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm install
+
+      - name: System Check
+        env:
+          STATIC_IP: ${{ secrets.STATIC_IP }}
+          ISP_PROVIDER: ${{ secrets.ISP_PROVIDER }}
+          SERVER_ID: ${{ secrets.SERVER_ID }}
+          SERVER_LOCATION: ${{ secrets.SERVER_LOCATION }}
+          MANAGED_BY: ${{ secrets.MANAGED_BY }}
+          ABUSE_EMAIL: ${{ secrets.ABUSE_EMAIL }}
+          HARDWARE_VENDOR: ${{ secrets.HARDWARE_VENDOR }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          TZ: Asia/Kolkata
+        run: |
+          SCHEDULE="${{ github.event.schedule }}"
+          MANUAL="${{ github.event.inputs.task }}"
+
+          # Manual dispatch
+          if [ "$MANUAL" == "summary-daily" ]; then
+            node monitor.js summary daily
+          elif [ "$MANUAL" == "summary-weekly" ]; then
+            node monitor.js summary weekly
+          elif [ "$MANUAL" == "summary-monthly" ]; then
+            node monitor.js summary monthly
+          elif [ "$MANUAL" == "summary-quarterly" ]; then
+            node monitor.js summary quarterly
+
+          # Scheduled summaries (IST-aligned crons)
+          elif [ "$SCHEDULE" == "30 2 1 1,4,7,10 *" ]; then
+            node monitor.js summary quarterly
+          elif [ "$SCHEDULE" == "30 2 1 * *" ]; then
+            node monitor.js summary monthly
+          elif [ "$SCHEDULE" == "30 2 * * 1" ]; then
+            node monitor.js summary weekly
+          elif [ "$SCHEDULE" == "30 2 * * *" ]; then
+            node monitor.js summary daily
+
+          # Default: Pulse check
+          else
+            node monitor.js pulse
+          fi

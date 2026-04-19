@@ -542,9 +542,9 @@
 
             // 2. SLA Metrics
             if (dailyStats) {
-                document.getElementById('uptime24h').innerText = `${dailyStats.uptime_percentage}%`;
+                document.getElementById('uptime24h').innerText = `${dailyStats.uptime_percentage ?? 0}%`;
                 document.getElementById('uptime24h').style.color = dailyStats.uptime_percentage >= 99 ? 'var(--accent-green)' : 'var(--accent-red)';
-                document.getElementById('latency24h').innerText = `${dailyStats.avg_latency_ms}ms`;
+                document.getElementById('latency24h').innerText = dailyStats.avg_latency_ms !== null ? `${dailyStats.avg_latency_ms}ms` : '--ms';
             }
 
             // 3. Render Bars (reverse so oldest is left, newest is right)

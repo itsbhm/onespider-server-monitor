@@ -55,15 +55,23 @@ async function notify(subject, html) {
     }
 }
 
-// ─── Health Check Engine ────────────────────────────
 async function performPulse() {
     const pRes = await ping.promise.probe(IP, { timeout: 10 });
-    let http = false, err = null;
+    let http = false, err = null, httpLatency = 0;
     try {
+        const start = Date.now();
         await axios.get(`http://${IP}`, { timeout: 10000, validateStatus: false });
+        httpLatency = Date.now() - start;
         http = true;
     } catch (e) { err = e.code || e.message; }
-    return { icmp: pRes.alive, http, latency: parseFloat(pRes.avg) || 0, err };
+    
+    // Fallback: If ICMP ping is blocked (GitHub Actions) but HTTP is up, 
+    // use HTTP latency and mark ICMP as true so the db SLA view averages it.
+    const isIcmpAlive = pRes.alive;
+    const latency = isIcmpAlive && pRes.avg !== 'unknown' ? (parseFloat(pRes.avg) || 0) : httpLatency;
+    const finalIcmp = isIcmpAlive || http;
+
+    return { icmp: finalIcmp, http, latency, err };
 }
 
 // ─── Summary Email Template ─────────────────────────

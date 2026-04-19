@@ -213,13 +213,13 @@
             display: flex;
             align-items: flex-end;
             height: 60px;
-            gap: 4px;
+            gap: 2px;
         }
 
         .bar {
             flex: 1;
             background-color: var(--accent-green);
-            border-radius: 4px;
+            border-radius: 2px;
             min-height: 20px;
             height: 100%;
             transition: all 0.2s ease;
@@ -358,12 +358,12 @@
             }
 
             .bars-wrapper {
-                gap: 2px;
+                gap: 1px;
                 height: 50px;
             }
 
             .bar {
-                border-radius: 2px;
+                border-radius: 1px;
             }
 
             .header h1 {
@@ -429,7 +429,7 @@
         </div>
 
         <div class="uptime-bars-container glass-panel">
-            <h3 class="uptime-bars-title">Last 60 Checks (5 hours)</h3>
+            <h3 class="uptime-bars-title">Last 288 Checks (24 hours)</h3>
             <div id="barsWrapper" class="bars-wrapper">
                 <!-- Bars will be auto-generated here -->
             </div>
@@ -483,12 +483,12 @@
             }
 
             try {
-                // Fetch last 60 checks (~5 hours)
+                // Fetch last 288 checks (~24 hours)
                 const { data: logs, error: logsError } = await dbClient
                     .from('uptime_logs')
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(60);
+                    .limit(288);
 
                 // Fetch Daily SLA
                 const { data: dailyStats, error: statError } = await dbClient

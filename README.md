@@ -19,7 +19,7 @@ The PostgreSQL database (managed by Supabase) uses advanced SQL Views to automat
 
 ### 3. Public Dashboard Visuals (`index.html`)
 The frontend is a fully decoupled HTML/JS package designed for Edge/Vercel/GitHub Pages deployment.
-- **The "5 Hour" Timeline:** The horizontal status bars on the dashboard are powered by fetching the `.limit(60)` latest checks. Since action checks happen every 5 minutes (`60 bars × 5 mins = 300 minutes`), exactly **5 hours** of continuous server history is displayed on the screen.
+- **The "24 Hour" Timeline:** The horizontal status bars on the dashboard are powered by fetching the `.limit(288)` latest checks. Since action checks happen every 5 minutes (`288 bars × 5 mins = 1440 minutes`), exactly **24 hours** of continuous server history is displayed on the screen.
 
 ---
 

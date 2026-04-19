@@ -5,122 +5,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OneSpider Status</title>
-    <!-- Modern Premium Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Vercel Brutalist Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --bg-base: #0f172a;
-            --bg-glass: rgba(30, 41, 59, 0.65);
-            --bg-hover: rgba(51, 65, 85, 0.8);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --bg-base: #000000;
+            --bg-panel: #0a0a0a;
+            --bg-hover: #111111;
+            --text-primary: #ededed;
+            --text-secondary: #888888;
+            --accent-green: #17c964; 
+            --accent-red: #f31260;   
+            --border-color: #333333;
         }
 
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
-            background-attachment: fixed;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-base);
             color: var(--text-primary);
             min-height: 100vh;
         }
 
-        /* Glass Container Style */
+        /* Brutalist Panel */
         .glass-panel {
-            background: var(--bg-glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-glass);
-            box-shadow: var(--shadow-glass);
-            border-radius: 16px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 768px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
 
         .header {
-            margin-bottom: 40px;
+            margin-bottom: 48px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
         .header h1 {
             margin: 0;
-            font-size: 26px;
+            font-size: 20px;
             font-weight: 600;
             letter-spacing: -0.5px;
-            background: linear-gradient(to right, #e2e8f0, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
         }
 
         .last-updated {
             color: var(--text-secondary);
             font-size: 13px;
-            background: rgba(0,0,0,0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-            border: 1px solid var(--border-glass);
+            font-weight: 500;
+            border-radius: 9999px;
+            padding: 4px 12px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .status-hero {
-            padding: 24px 30px;
+            padding: 24px;
             margin-bottom: 32px;
             display: flex;
             align-items: center;
             gap: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Subtle glowing edge for hero */
-        .status-hero::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent-green);
-            box-shadow: 0 0 15px var(--accent-green);
-        }
-
-        .status-hero.down::before {
-            background: var(--accent-red);
-            box-shadow: 0 0 15px var(--accent-red);
         }
 
         .ping-dot {
-            width: 14px;
-            height: 14px;
+            width: 10px;
+            height: 10px;
             background-color: var(--accent-green);
             border-radius: 50%;
-            box-shadow: 0 0 15px var(--accent-green);
-            animation: pulse 2s infinite;
+            /* Minimalist soft glow */
+            box-shadow: 0 0 10px var(--accent-green);
         }
 
         .status-hero.down .ping-dot {
             background-color: var(--accent-red);
-            box-shadow: 0 0 15px var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red);
         }
 
         .status-text {
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 500;
             color: var(--text-primary);
             margin: 0;
-            letter-spacing: -0.3px;
         }
 
         .status-hero.down .status-text {
@@ -130,51 +120,48 @@
         .metrics-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 32px;
         }
 
         .metric-card {
             padding: 24px;
-            transition: transform 0.2s ease, background 0.2s ease;
+            transition: border-color 0.2s ease;
         }
 
         .metric-card:hover {
-            transform: translateY(-2px);
+            border-color: #555;
             background: var(--bg-hover);
         }
 
         .metric-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+            margin-bottom: 12px;
             font-weight: 500;
         }
 
         .metric-value {
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 32px;
+            font-weight: 600;
             margin: 0;
-            background: linear-gradient(to right, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            color: var(--text-primary);
         }
 
         .metric-desc {
             font-size: 13px;
             color: var(--text-secondary);
-            margin-top: 6px;
+            margin-top: 12px;
         }
 
         .server-details-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
             gap: 16px; 
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-glass);
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
         }
 
         .server-details-grid div {
@@ -186,102 +173,92 @@
         .server-details-grid span {
             color: var(--text-secondary); 
             font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 500;
         }
 
         .server-details-grid strong, .server-details-grid a {
             color: var(--text-primary);
             font-size: 14px;
             font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .server-details-grid a:hover {
+            text-decoration: underline;
+            color: #fff;
         }
 
         .uptime-bars-container {
-            padding: 30px;
+            padding: 24px;
             margin-bottom: 32px;
         }
 
         .uptime-bars-title {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 500;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             color: var(--text-primary);
         }
 
         .bars-wrapper {
             display: flex;
             align-items: flex-end;
-            height: 60px;
+            height: 48px;
             gap: 2px;
         }
 
         .bar {
             flex: 1;
             background-color: var(--accent-green);
-            border-radius: 2px;
-            min-height: 20px;
+            border-radius: 1px;
+            min-height: 12px;
             height: 100%;
-            transition: all 0.2s ease;
+            transition: opacity 0.2s;
+            opacity: 1;
             position: relative;
-            opacity: 0.9;
         }
 
         .bar.down {
             background-color: var(--accent-red);
-            height: 50%;
+            height: 40%;
+            opacity: 1;
         }
 
         .bar:hover {
-            opacity: 1;
-            transform: scaleY(1.05);
+            opacity: 0.7;
             cursor: pointer;
-            box-shadow: 0 0 8px rgba(255,255,255,0.2);
         }
 
         .bar-tooltip {
             visibility: hidden;
-            background-color: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(4px);
-            color: #fff;
+            background-color: #111111;
+            color: #ededed;
             text-align: center;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 8px 12px;
             position: absolute;
             z-index: 10;
-            bottom: calc(100% + 10px);
+            bottom: calc(100% + 8px);
             left: 50%;
-            transform: translateX(-50%) translateY(5px);
+            transform: translateX(-50%);
             opacity: 0;
-            transition: all 0.2s ease;
             font-size: 12px;
             font-weight: 500;
             width: max-content;
-            border: 1px solid var(--border-glass);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
             pointer-events: none;
-        }
-
-        .bar-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.8);
         }
 
         .bar:hover .bar-tooltip {
             visibility: visible;
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
         }
 
         .footer {
             text-align: center;
-            padding: 40px 0;
+            padding: 32px 0;
             color: var(--text-secondary);
             font-size: 13px;
         }
@@ -290,17 +267,10 @@
             color: var(--text-primary);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.2s;
         }
 
         .footer a:hover {
-            color: #fff;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            text-decoration: underline;
         }
 
         /* Initial load state */
@@ -309,19 +279,13 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-size: 16px;
+            font-size: 14px;
             color: var(--text-secondary);
             font-weight: 500;
         }
 
         #app {
             display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Mobile Responsiveness */
@@ -331,50 +295,35 @@
             }
 
             .server-details-grid {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: 1fr 1fr;
             }
 
             .header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: 16px;
             }
 
-            .status-hero {
-                flex-direction: column;
-                text-align: center;
-                padding: 24px;
-            }
-            .status-hero::before {
-                width: 100%;
-                height: 4px;
+            .container {
+                padding: 32px 16px;
             }
         }
 
-        /* Small screens */
-        @media (max-width: 400px) {
-            .container {
-                padding: 20px 16px;
+        @media (max-width: 380px) {
+            .header h1 { font-size: 18px; }
+            .status-text { font-size: 14px; }
+            .metric-value { font-size: 28px; }
+            
+            .server-details-grid {
+                grid-template-columns: 1fr;
             }
 
             .bars-wrapper {
+                height: 32px;
                 gap: 1px;
-                height: 50px;
-            }
-
-            .bar {
-                border-radius: 1px;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .status-text {
-                font-size: 18px;
             }
             .uptime-bars-container {
-                padding: 20px;
+               padding: 20px 16px;
             }
         }
     </style>
@@ -386,7 +335,24 @@
 
     <div id="app" class="container">
         <div class="header">
-            <h1>🕷️ OneSpider Status</h1>
+            <div class="brand">
+                <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 113.57 113.57">
+                  <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_1-2" data-name="Layer 1">
+                      <g>
+                        <path d="M113.57,13.25v87.07a13.25,13.25,0,0,1-13.25,13.25H13.25A13.25,13.25,0,0,1,0,100.32V13.25A13.25,13.25,0,0,1,13.25,0h87.07A13.25,13.25,0,0,1,113.57,13.25Z"/>
+                        <path d="M84.12,92.9H78.4V66.47c-6.87-3.85-10.74-8.56-11.52-14C66,46.19,69.53,41,71.28,38.94V26.45H77v15l-.91.9s-4.27,4.33-3.55,9.2c.54,3.71,4,7.27,9.95,10.3l1.63.82Z" fill="#fff"/>
+                        <path d="M95.93,97.92H90.21V62.86C83.37,59.41,79.61,55.22,79,50.4S81.3,41.71,83,39.94V17.69h5.72V42.75l-1.1.91s-3.28,2.86-2.88,6c.36,2.85,3.74,5.86,9.5,8.48l1.73.79Z" fill="#fff"/>
+                        <path d="M35.64,92.9H29.92V62.69l1.62-.82c6-3,9.41-6.59,10-10.3.71-4.87-3.52-9.16-3.56-9.21l-.9-.89v-15h5.72V38.94c1.75,2.1,5.3,7.25,4.41,13.51-.78,5.47-4.66,10.17-11.52,14Z" fill="#fff"/>
+                        <path d="M23.82,97.92H18.1v-39l1.74-.79c5.76-2.62,9.13-5.63,9.49-8.48.4-3.12-2.85-6-2.88-6l-1.08-.91v-25h5.72V39.94c1.65,1.77,4.52,5.6,3.93,10.46s-4.35,9-11.19,12.46Z" fill="#fff"/>
+                        <path d="M51.26,41.66a6.26,6.26,0,1,1,6.24,6.62A6.44,6.44,0,0,1,51.26,41.66Z" fill="#fff"/>
+                        <path d="M69.06,66.18a5.18,5.18,0,0,0-2,.09,1.83,1.83,0,0,1-1.77-.56l-2-2.1a2.1,2.1,0,0,1-.53-1.9,5.78,5.78,0,0,0,.15-1.82,5.49,5.49,0,1,0-11,.4,6.16,6.16,0,0,0,.14,1.3,2.12,2.12,0,0,1-.49,1.88l-2.11,2.24a1.86,1.86,0,0,1-1.78.56,5.14,5.14,0,0,0-2-.09,5.82,5.82,0,1,0,6.22,6.64,6.29,6.29,0,0,0-.07-2.13,2.11,2.11,0,0,1,.54-1.86l2.19-2.31A1.83,1.83,0,0,1,56.26,66a5.38,5.38,0,0,0,1.14.13A5.29,5.29,0,0,0,58.46,66a1.86,1.86,0,0,1,1.74.53l2.16,2.29a2.11,2.11,0,0,1,.54,1.86,6.11,6.11,0,0,0-.06,2.14,5.51,5.51,0,1,0,6.22-6.65Z" fill="#fff"/>
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+                <h1>OneSpider Status</h1>
+            </div>
             <div class="last-updated" id="lastChecked">Last checked: Just now</div>
         </div>
 
@@ -398,21 +364,13 @@
         <div class="metrics-grid">
             <div class="metric-card glass-panel" style="grid-column: 1 / -1;">
                 <div class="metric-label">Server Details</div>
-                <div class="server-details-grid"
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px;">
-                    <div><span style="color: var(--text-secondary); font-size: 13px;">ID:</span> <strong
-                            id="metaId">--</strong></div>
-                    <div><span style="color: var(--text-secondary); font-size: 13px;">IP:</span> <strong
-                            id="metaIp">--</strong></div>
-                    <div><span style="color: var(--text-secondary); font-size: 13px;">ISP:</span> <strong
-                            id="metaProvider">--</strong></div>
-                    <div><span style="color: var(--text-secondary); font-size: 13px;">Location:</span> <strong
-                            id="metaLocation">--</strong></div>
-                    <div><span style="color: var(--text-secondary); font-size: 13px;">Hardware:</span> <strong
-                            id="metaHardware">--</strong></div>
-                    <div><span style="color: var(--text-secondary); font-size: 13px;">Abuse Desk:</span> <a href="#"
-                            id="metaAbuse"
-                            style="color: var(--text-primary); font-weight: bold; text-decoration: none;">--</a></div>
+                <div class="server-details-grid">
+                    <div><span>ID:</span> <strong id="metaId">--</strong></div>
+                    <div><span>IP:</span> <strong id="metaIp">--</strong></div>
+                    <div><span>ISP:</span> <strong id="metaProvider">--</strong></div>
+                    <div><span>Location:</span> <strong id="metaLocation">--</strong></div>
+                    <div><span>Hardware:</span> <strong id="metaHardware">--</strong></div>
+                    <div><span>Abuse Desk:</span> <a href="#" id="metaAbuse">--</a></div>
                 </div>
             </div>
 

@@ -1,6 +1,6 @@
 # 🕷️ OneSpider Server Monitor
 
-A robust, enterprise-grade, zero-cost infrastructure monitoring and alerting system. It actively tracks your server health, records historical uptime into a PostgreSQL database, calculates SLA metrics automatically in Indian Standard Time (IST), sends premium HTML alerts via Amazon SES, and powers an elegant glassmorphism public dashboard.
+A robust, enterprise-grade, zero-cost infrastructure monitoring and alerting system. It actively tracks your server health, records historical uptime into a PostgreSQL database, calculates SLA metrics automatically in Indian Standard Time (IST), sends premium HTML alerts via Amazon SES, and powers an elegant Vercel-inspired minimalist public dashboard.
 
 ---
 

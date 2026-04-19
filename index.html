@@ -429,7 +429,7 @@
         </div>
 
         <div class="uptime-bars-container glass-panel">
-            <h3 class="uptime-bars-title">Last 288 Checks (24 hours)</h3>
+            <h3 class="uptime-bars-title">Recent Checks (24 hours)</h3>
             <div id="barsWrapper" class="bars-wrapper">
                 <!-- Bars will be auto-generated here -->
             </div>
@@ -483,12 +483,13 @@
             }
 
             try {
-                // Fetch last 288 checks (~24 hours)
+                // Fetch exactly 24 hours of checks
+                const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
                 const { data: logs, error: logsError } = await dbClient
                     .from('uptime_logs')
                     .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(288);
+                    .gte('created_at', twentyFourHoursAgo)
+                    .order('created_at', { ascending: false });
 
                 // Fetch Daily SLA
                 const { data: dailyStats, error: statError } = await dbClient
@@ -540,12 +541,32 @@
             document.getElementById('metaAbuse').innerText = CONFIG.ABUSE_EMAIL;
             document.getElementById('metaAbuse').href = `mailto:${CONFIG.ABUSE_EMAIL}`;
 
-            // 2. SLA Metrics
-            if (dailyStats) {
-                document.getElementById('uptime24h').innerText = `${dailyStats.uptime_percentage ?? 0}%`;
-                document.getElementById('uptime24h').style.color = dailyStats.uptime_percentage >= 99 ? 'var(--accent-green)' : 'var(--accent-red)';
-                document.getElementById('latency24h').innerText = dailyStats.avg_latency_ms !== null ? `${dailyStats.avg_latency_ms}ms` : '--ms';
-            }
+            // 2. SLA Metrics (True Rolling 24 Hours)
+            let upChecks = 0;
+            let totalLatency = 0;
+            let validLatencyChecks = 0;
+
+            logs.forEach(log => {
+                const isCheckUp = log.icmp_up || log.http_up;
+                if (isCheckUp) upChecks++;
+                
+                // Only average valid latency numbers where ICMP/fallback succeeded
+                if (log.icmp_up && log.latency_ms > 0) {
+                    totalLatency += log.latency_ms;
+                    validLatencyChecks++;
+                }
+            });
+
+            const rollingUptime = logs.length > 0 ? (upChecks / logs.length) * 100 : 0;
+            const uptimeDisplay = Number.isInteger(rollingUptime) ? rollingUptime : rollingUptime.toFixed(2);
+            const rollingAvgLatency = validLatencyChecks > 0 ? Math.round(totalLatency / validLatencyChecks) : null;
+
+            document.getElementById('uptime24h').innerText = `${uptimeDisplay}%`;
+            document.getElementById('uptime24h').style.color = rollingUptime >= 99 ? 'var(--accent-green)' : 'var(--accent-red)';
+            document.getElementById('latency24h').innerText = rollingAvgLatency !== null ? `${rollingAvgLatency}ms` : '--ms';
+
+            // Generate title showing real number of checks
+            document.querySelector('.uptime-bars-title').innerText = `Last ${logs.length} Checks (24 hours)`;
 
             // 3. Render Bars (reverse so oldest is left, newest is right)
             const reversedLogs = [...logs].reverse();

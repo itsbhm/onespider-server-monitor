@@ -94,7 +94,7 @@ node --env-file=.env monitor.js summary quarterly
 The user-facing dashboard located at `index.html` operates uniquely on the frontend and needs its own configuration.
 
 1. Open `index.html` in your IDE.
-2. Navigate to line `~360` to find the `const CONFIG = { ... }` block.
+2. Navigate to line `~405` to find the `const CONFIG = { ... }` block.
 3. Update `SUPABASE_URL` with your Supabase link.
 4. Update `SUPABASE_PUBLISHABLE_KEY` with your safe, public-facing `anon` key. (DO NOT use the service_role key here!).
 5. Re-enter your `STATIC_IP`, `ISP_PROVIDER` and other server metrics.

@@ -18,9 +18,12 @@
             --bg-hover: #111111;
             --text-primary: #ededed;
             --text-secondary: #888888;
-            --accent-green: #17c964; 
-            --accent-red: #f31260;   
+            --accent-green: #17c964;
+            --accent-green-glow: rgba(23, 201, 100, 0.4);
+            --accent-red: #f31260;
+            --accent-red-glow: rgba(243, 18, 96, 0.5);
             --border-color: #333333;
+            --border-hover: #555555;
         }
 
         body {
@@ -33,11 +36,15 @@
             min-height: 100vh;
         }
 
-        /* Brutalist Panel */
+        /* Premium Panel */
         .glass-panel {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -45,6 +52,28 @@
             margin: 0 auto;
             padding: 60px 20px;
         }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px var(--accent-red-glow); }
+            50% { box-shadow: 0 0 20px var(--accent-red-glow); }
+            100% { box-shadow: 0 0 10px var(--accent-red-glow); }
+        }
+
+        .header, .status-hero, .metrics-grid, .uptime-bars-container {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .header { animation-delay: 0.1s; }
+        .status-hero { animation-delay: 0.2s; }
+        .metrics-grid { animation-delay: 0.3s; }
+        .uptime-bars-container { animation-delay: 0.4s; }
 
         .header {
             margin-bottom: 48px;
@@ -97,13 +126,13 @@
             height: 10px;
             background-color: var(--accent-green);
             border-radius: 50%;
-            /* Minimalist soft glow */
-            box-shadow: 0 0 10px var(--accent-green);
+            /* Soft glow */
+            box-shadow: 0 0 12px var(--accent-green-glow);
         }
 
         .status-hero.down .ping-dot {
             background-color: var(--accent-red);
-            box-shadow: 0 0 10px var(--accent-red);
+            animation: pulseGlow 2s infinite;
         }
 
         .status-text {
@@ -126,12 +155,14 @@
 
         .metric-card {
             padding: 24px;
-            transition: border-color 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .metric-card:hover {
-            border-color: #555;
+            border-color: var(--border-hover);
             background: var(--bg-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.3);
         }
 
         .metric-label {
@@ -142,11 +173,14 @@
         }
 
         .metric-value {
-            font-size: 32px;
-            font-weight: 600;
+            font-size: 34px;
+            font-weight: 700;
             margin: 0;
             letter-spacing: -1px;
             color: var(--text-primary);
+            background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .metric-desc {
@@ -156,9 +190,9 @@
         }
 
         .server-details-grid {
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
-            gap: 16px; 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
             margin-top: 24px;
             padding-top: 24px;
             border-top: 1px solid var(--border-color);
@@ -171,18 +205,19 @@
         }
 
         .server-details-grid span {
-            color: var(--text-secondary); 
+            color: var(--text-secondary);
             font-size: 12px;
             font-weight: 500;
         }
 
-        .server-details-grid strong, .server-details-grid a {
+        .server-details-grid strong,
+        .server-details-grid a {
             color: var(--text-primary);
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
         }
-        
+
         .server-details-grid a:hover {
             text-decoration: underline;
             color: #fff;
@@ -205,55 +240,76 @@
             display: flex;
             align-items: flex-end;
             height: 48px;
-            gap: 2px;
+            gap: 3px;
         }
 
         .bar {
             flex: 1;
             background-color: var(--accent-green);
-            border-radius: 1px;
+            border-radius: 2px;
             min-height: 12px;
             height: 100%;
-            transition: opacity 0.2s;
-            opacity: 1;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.85;
             position: relative;
         }
 
         .bar.down {
             background-color: var(--accent-red);
-            height: 40%;
+            height: 100%; /* Fixed missing height */
+            box-shadow: 0 0 12px var(--accent-red-glow);
             opacity: 1;
+            z-index: 1;
         }
 
         .bar:hover {
-            opacity: 0.7;
+            opacity: 1;
             cursor: pointer;
+            transform: scaleY(1.1);
+            transform-origin: bottom;
+            border-radius: 4px;
+            z-index: 2;
         }
 
         .bar-tooltip {
             visibility: hidden;
-            background-color: #111111;
-            color: #ededed;
+            background-color: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
             text-align: center;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 8px 12px;
             position: absolute;
-            z-index: 10;
-            bottom: calc(100% + 8px);
+            z-index: 20;
+            bottom: calc(100% + 12px);
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(5px);
             opacity: 0;
             font-size: 12px;
             font-weight: 500;
             width: max-content;
             border: 1px solid var(--border-color);
             pointer-events: none;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.8);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        .bar-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(15, 15, 15, 0.8) transparent transparent transparent;
         }
 
         .bar:hover .bar-tooltip {
             visibility: visible;
             opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
         .footer {
@@ -261,6 +317,8 @@
             padding: 32px 0;
             color: var(--text-secondary);
             font-size: 13px;
+            animation: fadeUp 0.6s ease-out 0.5s forwards;
+            opacity: 0;
         }
 
         .footer a {
@@ -310,10 +368,18 @@
         }
 
         @media (max-width: 380px) {
-            .header h1 { font-size: 18px; }
-            .status-text { font-size: 14px; }
-            .metric-value { font-size: 28px; }
-            
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .status-text {
+                font-size: 14px;
+            }
+
+            .metric-value {
+                font-size: 28px;
+            }
+
             .server-details-grid {
                 grid-template-columns: 1fr;
             }
@@ -322,8 +388,9 @@
                 height: 32px;
                 gap: 1px;
             }
+
             .uptime-bars-container {
-               padding: 20px 16px;
+                padding: 20px 16px;
             }
         }
     </style>
@@ -337,19 +404,31 @@
         <div class="header">
             <div class="brand">
                 <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 113.57 113.57">
-                  <g id="Layer_2" data-name="Layer 2">
-                    <g id="Layer_1-2" data-name="Layer 1">
-                      <g>
-                        <path d="M113.57,13.25v87.07a13.25,13.25,0,0,1-13.25,13.25H13.25A13.25,13.25,0,0,1,0,100.32V13.25A13.25,13.25,0,0,1,13.25,0h87.07A13.25,13.25,0,0,1,113.57,13.25Z"/>
-                        <path d="M84.12,92.9H78.4V66.47c-6.87-3.85-10.74-8.56-11.52-14C66,46.19,69.53,41,71.28,38.94V26.45H77v15l-.91.9s-4.27,4.33-3.55,9.2c.54,3.71,4,7.27,9.95,10.3l1.63.82Z" fill="#fff"/>
-                        <path d="M95.93,97.92H90.21V62.86C83.37,59.41,79.61,55.22,79,50.4S81.3,41.71,83,39.94V17.69h5.72V42.75l-1.1.91s-3.28,2.86-2.88,6c.36,2.85,3.74,5.86,9.5,8.48l1.73.79Z" fill="#fff"/>
-                        <path d="M35.64,92.9H29.92V62.69l1.62-.82c6-3,9.41-6.59,10-10.3.71-4.87-3.52-9.16-3.56-9.21l-.9-.89v-15h5.72V38.94c1.75,2.1,5.3,7.25,4.41,13.51-.78,5.47-4.66,10.17-11.52,14Z" fill="#fff"/>
-                        <path d="M23.82,97.92H18.1v-39l1.74-.79c5.76-2.62,9.13-5.63,9.49-8.48.4-3.12-2.85-6-2.88-6l-1.08-.91v-25h5.72V39.94c1.65,1.77,4.52,5.6,3.93,10.46s-4.35,9-11.19,12.46Z" fill="#fff"/>
-                        <path d="M51.26,41.66a6.26,6.26,0,1,1,6.24,6.62A6.44,6.44,0,0,1,51.26,41.66Z" fill="#fff"/>
-                        <path d="M69.06,66.18a5.18,5.18,0,0,0-2,.09,1.83,1.83,0,0,1-1.77-.56l-2-2.1a2.1,2.1,0,0,1-.53-1.9,5.78,5.78,0,0,0,.15-1.82,5.49,5.49,0,1,0-11,.4,6.16,6.16,0,0,0,.14,1.3,2.12,2.12,0,0,1-.49,1.88l-2.11,2.24a1.86,1.86,0,0,1-1.78.56,5.14,5.14,0,0,0-2-.09,5.82,5.82,0,1,0,6.22,6.64,6.29,6.29,0,0,0-.07-2.13,2.11,2.11,0,0,1,.54-1.86l2.19-2.31A1.83,1.83,0,0,1,56.26,66a5.38,5.38,0,0,0,1.14.13A5.29,5.29,0,0,0,58.46,66a1.86,1.86,0,0,1,1.74.53l2.16,2.29a2.11,2.11,0,0,1,.54,1.86,6.11,6.11,0,0,0-.06,2.14,5.51,5.51,0,1,0,6.22-6.65Z" fill="#fff"/>
-                      </g>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Layer_1-2" data-name="Layer 1">
+                            <g>
+                                <path
+                                    d="M113.57,13.25v87.07a13.25,13.25,0,0,1-13.25,13.25H13.25A13.25,13.25,0,0,1,0,100.32V13.25A13.25,13.25,0,0,1,13.25,0h87.07A13.25,13.25,0,0,1,113.57,13.25Z" />
+                                <path
+                                    d="M84.12,92.9H78.4V66.47c-6.87-3.85-10.74-8.56-11.52-14C66,46.19,69.53,41,71.28,38.94V26.45H77v15l-.91.9s-4.27,4.33-3.55,9.2c.54,3.71,4,7.27,9.95,10.3l1.63.82Z"
+                                    fill="#fff" />
+                                <path
+                                    d="M95.93,97.92H90.21V62.86C83.37,59.41,79.61,55.22,79,50.4S81.3,41.71,83,39.94V17.69h5.72V42.75l-1.1.91s-3.28,2.86-2.88,6c.36,2.85,3.74,5.86,9.5,8.48l1.73.79Z"
+                                    fill="#fff" />
+                                <path
+                                    d="M35.64,92.9H29.92V62.69l1.62-.82c6-3,9.41-6.59,10-10.3.71-4.87-3.52-9.16-3.56-9.21l-.9-.89v-15h5.72V38.94c1.75,2.1,5.3,7.25,4.41,13.51-.78,5.47-4.66,10.17-11.52,14Z"
+                                    fill="#fff" />
+                                <path
+                                    d="M23.82,97.92H18.1v-39l1.74-.79c5.76-2.62,9.13-5.63,9.49-8.48.4-3.12-2.85-6-2.88-6l-1.08-.91v-25h5.72V39.94c1.65,1.77,4.52,5.6,3.93,10.46s-4.35,9-11.19,12.46Z"
+                                    fill="#fff" />
+                                <path d="M51.26,41.66a6.26,6.26,0,1,1,6.24,6.62A6.44,6.44,0,0,1,51.26,41.66Z"
+                                    fill="#fff" />
+                                <path
+                                    d="M69.06,66.18a5.18,5.18,0,0,0-2,.09,1.83,1.83,0,0,1-1.77-.56l-2-2.1a2.1,2.1,0,0,1-.53-1.9,5.78,5.78,0,0,0,.15-1.82,5.49,5.49,0,1,0-11,.4,6.16,6.16,0,0,0,.14,1.3,2.12,2.12,0,0,1-.49,1.88l-2.11,2.24a1.86,1.86,0,0,1-1.78.56,5.14,5.14,0,0,0-2-.09,5.82,5.82,0,1,0,6.22,6.64,6.29,6.29,0,0,0-.07-2.13,2.11,2.11,0,0,1,.54-1.86l2.19-2.31A1.83,1.83,0,0,1,56.26,66a5.38,5.38,0,0,0,1.14.13A5.29,5.29,0,0,0,58.46,66a1.86,1.86,0,0,1,1.74.53l2.16,2.29a2.11,2.11,0,0,1,.54,1.86,6.11,6.11,0,0,0-.06,2.14,5.51,5.51,0,1,0,6.22-6.65Z"
+                                    fill="#fff" />
+                            </g>
+                        </g>
                     </g>
-                  </g>
                 </svg>
                 <h1>OneSpider Status</h1>
             </div>
@@ -394,7 +473,7 @@
         </div>
 
         <div class="footer">
-            Powered by <a href="#" target="_blank">OneSpider Infrastructure Monitor</a>
+            Powered by <a href="https://onespider.net/" target="_blank">OneSpider</a>
         </div>
     </div>
 
@@ -507,7 +586,7 @@
             logs.forEach(log => {
                 const isCheckUp = log.icmp_up || log.http_up;
                 if (isCheckUp) upChecks++;
-                
+
                 // Only average valid latency numbers where ICMP/fallback succeeded
                 if (log.icmp_up && log.latency_ms > 0) {
                     totalLatency += log.latency_ms;
@@ -519,8 +598,10 @@
             const uptimeDisplay = Number.isInteger(rollingUptime) ? rollingUptime : rollingUptime.toFixed(2);
             const rollingAvgLatency = validLatencyChecks > 0 ? Math.round(totalLatency / validLatencyChecks) : null;
 
-            document.getElementById('uptime24h').innerText = `${uptimeDisplay}%`;
-            document.getElementById('uptime24h').style.color = rollingUptime >= 99 ? 'var(--accent-green)' : 'var(--accent-red)';
+            const uptimeElem = document.getElementById('uptime24h');
+            uptimeElem.innerText = `${uptimeDisplay}%`;
+            uptimeElem.style.background = 'none';
+            uptimeElem.style.webkitTextFillColor = rollingUptime >= 99 ? 'var(--accent-green)' : 'var(--accent-red)';
             document.getElementById('latency24h').innerText = rollingAvgLatency !== null ? `${rollingAvgLatency}ms` : '--ms';
 
             // Generate title showing real number of checks
